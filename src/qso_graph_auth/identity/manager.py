@@ -8,6 +8,13 @@ from .errors import PersonaNotFound, ProviderRefMissing, SecretMissing
 from .models import Persona, ProviderRef
 from .store import PersonaStore
 
+# Providers that authenticate with an API key rather than a password. For
+# these, a stored api_key wins over a stored password, so a password saved
+# alongside the key (set-credential accepts both for every provider) is never
+# sent as the key. Every other provider keeps the historical order: password
+# first, api_key as the fallback.
+API_KEY_FIRST: frozenset[str] = frozenset({"qrz_logbook"})
+
 
 class PersonaManager:
     """High-level API for personas + credentials (no network I/O)."""
@@ -31,8 +38,20 @@ class PersonaManager:
 
     # -------- Strict API --------
 
-    def require(self, persona: str, provider: str) -> tuple[str, str]:
-        """Return (username, secret) from the OS keyring."""
+    def require(
+        self, persona: str, provider: str, prefer: str | None = None,
+    ) -> tuple[str, str]:
+        """Return (username, secret) from the OS keyring.
+
+        When both a password and an api_key are stored, ``prefer`` picks which
+        one is returned: ``"password"`` or ``"api_key"``. Left as None, the
+        provider decides (api_key first for providers in ``API_KEY_FIRST``,
+        password first otherwise). The other value is used as a fallback if the
+        preferred one is not stored.
+        """
+        if prefer not in (None, "password", "api_key"):
+            raise ValueError(f"prefer must be 'password' or 'api_key', got {prefer!r}")
+
         p = self.get_persona(persona)
         if p is None:
             raise PersonaNotFound(persona, provider, f"No such persona: '{persona}'")
@@ -58,7 +77,12 @@ class PersonaManager:
                 f"(run: qso-auth creds set {persona} {provider})"
             )
 
-        secret = creds.password or creds.api_key
+        if prefer is None:
+            prefer = "api_key" if provider.lower() in API_KEY_FIRST else "password"
+        if prefer == "api_key":
+            secret = creds.api_key or creds.password
+        else:
+            secret = creds.password or creds.api_key
         if not secret:
             raise SecretMissing(
                 persona, provider,
