@@ -34,6 +34,10 @@ Documentation = "https://qso-graph.io"
 Repository = "https://github.com/qso-graph/qso-graph-auth"
 Issues = "https://github.com/qso-graph/qso-graph-auth/issues"
 
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
