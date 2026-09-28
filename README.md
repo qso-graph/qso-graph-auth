@@ -11,8 +11,10 @@ Provides a shared identity layer so that authenticated MCP servers (eqsl-mcp, qr
 ## Install
 
 ```bash
-pip install qso-graph-auth
+uv tool install qso-graph-auth   # the qso-auth command, on your PATH
 ```
+
+MCP servers that need it install it themselves. For your own code: `pip install qso-graph-auth`.
 
 ## Quick Start
 
@@ -81,6 +83,15 @@ qso-auth creds get        Show redacted credentials
 qso-auth creds delete     Delete stored credentials
 qso-auth creds doctor     Check credential health
 qso-auth creds reset      Factory reset (delete all)
+```
+
+## Development
+
+```bash
+git clone https://github.com/qso-graph/qso-graph-auth.git
+cd qso-graph-auth
+uv sync --group dev
+uv run pytest
 ```
 
 ## Part of QSO-Graph
