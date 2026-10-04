@@ -5,6 +5,20 @@ All notable changes to `qso-graph-auth` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] — 2026-10-04
+
+### Security
+
+- **`qso-auth creds get` no longer shows any part of a secret.** The redacted view printed the
+  first two characters of a password or API key; it now shows only that one is stored (`•••`).
+- **`qso-auth creds get --raw` is removed.** It printed the stored password or API key in full.
+  Credentials are never printed (Security Framework guarantee #1); to see a stored secret, open
+  your operating system's keychain. Both found by CodeQL `py/clear-text-logging-sensitive-data`.
+
+### Fixed
+
+- `qso-auth --version` reported 0.1.0; `__version__` now matches the package version.
+
 ## [0.1.2] — 2026-09-28
 
 ### Fixed

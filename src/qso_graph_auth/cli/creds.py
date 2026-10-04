@@ -25,7 +25,8 @@ except Exception:
 
 def _redacted(c: Credentials) -> dict[str, str]:
     def mask(v: str) -> str:
-        return (v[:2] + "…") if len(v) > 4 else "•••"
+        # Says a secret is stored, nothing about it: no characters, no length.
+        return "•••"
 
     out: dict[str, str] = {}
     if c.username:
@@ -88,10 +89,7 @@ def cmd_get(args: argparse.Namespace) -> int:
     if not c:
         print("No credentials stored.")
         return 1
-    if getattr(args, "raw", False):
-        print(c.to_json())
-    else:
-        print(json.dumps(_redacted(c), indent=2))
+    print(json.dumps(_redacted(c), indent=2))
     return 0
 
 
@@ -214,7 +212,6 @@ def register_cli(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]
     g = sp.add_parser("get", help="Show redacted credentials.")
     g.add_argument("persona", help="Persona name")
     g.add_argument("provider", help="Provider")
-    g.add_argument("--raw", action="store_true", help="Print raw JSON (Use with Caution)")
     g.set_defaults(func=cmd_get)
 
     d = sp.add_parser("delete", help="Delete stored credentials.")
