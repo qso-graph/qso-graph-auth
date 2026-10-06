@@ -63,7 +63,9 @@ jobs:
         run: python -m pytest tests/test_security.py -v
 
       - name: Audit dependencies for vulnerabilities
-        run: pip-audit --strict --desc 2>&1 || true
+        # Audits this package's declared dependencies, and can fail: a known CVE stops the release.
+        # A finding with no fix yet is excepted only explicitly: --ignore-vuln ID, with a reason and date.
+        run: pip-audit --strict --desc on .
 
       - name: Grep check — no subprocess/shell
         run: |
@@ -110,19 +112,15 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 
   # ---------------------------------------------------------------------------
-  # Done when PyPI serves the version; then tag the released commit. A workflow's
+  # Done when PyPI serves the version (verify); then tag the released commit. A workflow's
   # own tag push triggers nothing. If tagging fails after PyPI serves it, the
   # release IS published: re-running the job is safe.
   # ---------------------------------------------------------------------------
-  tag:
-    name: Verify PyPI and tag the release
+  verify:
+    name: Verify PyPI
     needs: [security, publish]
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v5
-
       - name: PyPI serves the released version
         run: |
           VERSION="${{ needs.security.outputs.version }}"
@@ -136,6 +134,15 @@ jobs:
           done
           echo "FAIL: PyPI never served ${PACKAGE} ${VERSION}"
           exit 1
+
+  tag:
+    name: Tag the release
+    needs: [security, verify]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
 
       - name: Create and push vX.Y.Z
         run: |
