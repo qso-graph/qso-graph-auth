@@ -30,7 +30,7 @@ qso-auth = "qso_graph_auth.cli:main"
 
 [project.urls]
 Homepage = "https://qso-graph.io"
-Documentation = "https://qso-graph.io"
+Documentation = "https://qso-graph.io/servers/qso-graph-auth/"
 Repository = "https://github.com/qso-graph/qso-graph-auth"
 Issues = "https://github.com/qso-graph/qso-graph-auth/issues"
 
