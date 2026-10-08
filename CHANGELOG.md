@@ -5,7 +5,7 @@ All notable changes to `qso-graph-auth` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.5] — 2026-10-08
 
 - `__version__` is read from the installed package's metadata, so `pyproject.toml` is the only place the version is written. 0.1.4 reported itself as 0.1.3 because the two copies disagreed.
 
