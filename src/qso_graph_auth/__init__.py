@@ -1,3 +1,14 @@
 """QSO-Graph Auth — persona and credential management for MCP servers."""
 
-__version__ = "0.1.3"
+from __future__ import annotations
+
+from importlib.metadata import PackageNotFoundError, version
+from typing import Final
+
+try:
+    _pkg_version = version("qso-graph-auth")
+except PackageNotFoundError:  # source tree without dist metadata
+    _pkg_version = "0.0.0-dev"
+
+# Read from the installed distribution, so pyproject.toml is the only place the version is written.
+__version__: Final[str] = _pkg_version
