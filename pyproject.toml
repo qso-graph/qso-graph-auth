@@ -4,7 +4,7 @@ version = "0.1.5"
 description = "Persona and credential management for qso-graph MCP servers"
 license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.10"
-authors = [{name = "KI7MT", email = "ki7mt@yahoo.com"}]
+authors = [{name = "KI7MT", email = "maintainers@qso-graph.io"}]
 readme = "README.md"
 keywords = [
     "amateur-radio", "ham-radio", "mcp", "model-context-protocol", "keyring", "credentials",
