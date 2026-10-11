@@ -5,6 +5,21 @@ All notable changes to `qso-graph-auth` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] — 2026-10-11
+
+- **ruff and mypy run in CI** (qso-graph-devel#66), as a job the `ci-all-green` gate requires.
+  Settings follow `adif-mcp`, the reference for every qso-graph Python repo, rather than a style of
+  this repo's own. They run once rather than per Python version: both read the source, and neither
+  answer changes with the interpreter.
+- `mypy` was already clean across all seventeen source files. `ruff` found one unused import:
+  `identity/manager.py` named `ProviderRef`, which the package re-exports from
+  `identity/__init__.py` and this module never uses.
+- `E501` is deferred rather than adopted (qso-graph-devel#70): what it reports in these repos are
+  widths, not defects, and some lines are long because they name a publisher's field exactly.
+- **The published contact is `maintainers@qso-graph.io`** (qso-graph-devel#69). The `authors` field
+  carried a personal address, and that field is what PyPI shows on the package page. The project
+  has had outside contributions; a project address is the fitting route for them.
+
 ## [0.1.5] — 2026-10-08
 
 - `__version__` is read from the installed package's metadata, so `pyproject.toml` is the only place the version is written. 0.1.4 reported itself as 0.1.3 because the two copies disagreed.

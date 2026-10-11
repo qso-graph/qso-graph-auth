@@ -5,7 +5,7 @@ from __future__ import annotations
 from qso_graph_auth.credentials import get_creds
 
 from .errors import PersonaNotFound, ProviderRefMissing, SecretMissing
-from .models import Persona, ProviderRef
+from .models import Persona
 from .store import PersonaStore
 
 # Providers that authenticate with an API key rather than a password. For
