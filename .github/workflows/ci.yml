@@ -1,10 +1,17 @@
 name: CI
 
+# A pull request is tested whatever it targets, and deliberately has no branch
+# filter. `main` is the one long-lived branch now, so `push` names it; but a filter
+# here would mean a pull request into any other branch ran no ruff, no mypy and no
+# pytest while still reporting green.
 on:
   pull_request:
-    branches: [main, develop]
   push:
-    branches: [main, develop]
+    branches: [main]
+  # Weekly, because an advisory is published against a lockfile that has not
+  # changed, and no pull-request-or-push trigger fires for that.
+  schedule:
+    - cron: "17 6 * * 1"
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -14,19 +21,6 @@ permissions:
   contents: read
 
 jobs:
-  # main takes a release PR from develop, or a security branch, and nothing else:
-  # merging into main publishes. Required on main by its branch protection.
-  release-source:
-    name: Release PR source
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          case "${{ github.head_ref }}" in
-            develop|security/*) echo "ok: ${{ github.head_ref }} -> main" ;;
-            *) echo "main takes a release PR from develop, or a security/ branch"; exit 1 ;;
-          esac
-
   # Lint and types, once rather than per Python: both read the source, and
   # neither answer changes with the interpreter running them (qso-graph-devel#66).
   lint:
@@ -73,9 +67,34 @@ jobs:
       - name: Security tests
         run: uv run pytest tests/test_security.py -v
 
+  # Audits the LOCKED environment, which is a different question from the one the
+  # release gate asks. publish.yml runs `pip-audit --strict --desc on .` -- the
+  # project's *declared* dependencies, resolved fresh -- which protects the people
+  # who `pip install` this library and cannot see uv.lock at all.
+  #
+  # This job syncs `--frozen` and audits what that produced, so a stale lock cannot
+  # sit unnoticed. On 2026-10-25 five MCP servers carried a CRITICAL certifi
+  # advisory in their lockfiles that Dependabot never opened a pull request for.
+  audit:
+    name: audit (locked dependencies)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install (locked)
+        run: uv sync --group dev --frozen
+
+      - name: No known vulnerability in the locked dependencies
+        run: uv run --with pip-audit pip-audit --strict
+
   ci-all-green:
     name: ci-all-green
-    needs: [lint, test]
+    needs: [lint, test, audit]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -87,6 +106,10 @@ jobs:
           fi
           if [[ "${{ needs.test.result }}" != "success" ]]; then
             echo "FAIL: test matrix did not all succeed (result=${{ needs.test.result }})"
+            exit 1
+          fi
+          if [[ "${{ needs.audit.result }}" != "success" ]]; then
+            echo "FAIL: the locked dependencies have a known vulnerability (result=${{ needs.audit.result }})"
             exit 1
           fi
           echo "All required CI jobs passed."
