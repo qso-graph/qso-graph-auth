@@ -37,7 +37,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
       package: ${{ steps.version.outputs.package }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # workflow_dispatch offers a branch picker, so unlike the old push trigger this
       # workflow can be started from anywhere. The lock is the pypi Environment's
@@ -110,7 +110,7 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "package=${PACKAGE}" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -165,9 +165,9 @@ jobs:
     permissions:
       id-token: write  # Required for trusted publishing (OIDC)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
