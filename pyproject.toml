@@ -3,7 +3,7 @@ name = "qso-graph-auth"
 version = "0.1.7"
 description = "Persona and credential management for qso-graph MCP servers"
 license = {text = "GPL-3.0-or-later"}
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{name = "KI7MT", email = "maintainers@qso-graph.io"}]
 readme = "README.md"
 keywords = [
@@ -15,7 +15,6 @@ classifiers = [
     "Topic :: Communications :: Ham Radio",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
