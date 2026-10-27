@@ -10,5 +10,6 @@ try:
 except PackageNotFoundError:  # source tree without dist metadata
     _pkg_version = "0.0.0-dev"
 
-# Read from the installed distribution, so pyproject.toml is the only place the version is written.
+# Read from the installed distribution, so pyproject.toml is the only place
+# the version is written.
 __version__: Final[str] = _pkg_version
