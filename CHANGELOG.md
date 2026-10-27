@@ -5,6 +5,12 @@ All notable changes to `qso-graph-auth` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-10-27
+
+- An interrupted release finishes at the same version
+- Guard the release gate's own precondition
+- Adopt E501 (qso-graph-devel#70)
+
 ## [0.2.0] — 2026-10-26
 
 ### Changed
