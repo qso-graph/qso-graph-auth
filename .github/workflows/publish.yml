@@ -36,6 +36,9 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       package: ${{ steps.version.outputs.package }}
+      # "true" when this version is on PyPI with no tag: an interrupted
+      # release being finished, not a new one being made.
+      resume: ${{ steps.version.outputs.resume }}
     steps:
       - uses: actions/checkout@v5
 
@@ -92,10 +95,14 @@ jobs:
           echo "${PACKAGE} ${VERSION}"
           # Only a 404 means "not published yet"; unreachable or 5xx is not a yes.
           CODE="$(curl -s -o /dev/null -w '%{http_code}' "https://pypi.org/pypi/${PACKAGE}/${VERSION}/json")"
+          # Read with the tag below, not alone. This refused on PyPI 200 full
+          # stop, so a failure in verify or tag -- both of which run after the
+          # upload -- left the version on PyPI, immutable and untagged, with no
+          # recovery but abandoning it. Three releases went that way across the
+          # fleet before 2026-10-27.
           case "$CODE" in
-            404) echo "PyPI: ${PACKAGE} ${VERSION} is new" ;;
-            200) echo "FAIL: ${PACKAGE} ${VERSION} is already on PyPI. Bump the version before releasing."; exit 1 ;;
-            *)   echo "FAIL: PyPI returned ${CODE}; cannot confirm ${VERSION} is new"; exit 1 ;;
+            404|200) : ;;
+            *) echo "FAIL: PyPI returned ${CODE}; cannot tell whether ${VERSION} is published"; exit 1 ;;
           esac
           # git ls-remote --exit-code: 2 means no such tag; anything else (0, 128) stops.
           set +e
@@ -103,10 +110,28 @@ jobs:
           RC=$?
           set -e
           case "$RC" in
-            2) echo "tag v${VERSION} does not exist yet" ;;
-            0) echo "FAIL: tag v${VERSION} already exists"; exit 1 ;;
+            0) TAGGED=yes ;;
+            2) TAGGED=no ;;
             *) echo "FAIL: could not check tags (git ls-remote exited ${RC})"; exit 1 ;;
           esac
+
+          RESUME=false
+          if [ "$CODE" = 404 ] && [ "$TAGGED" = no ]; then
+            echo "PyPI: ${PACKAGE} ${VERSION} is new, tag v${VERSION} is free"
+          elif [ "$CODE" = 200 ] && [ "$TAGGED" = no ]; then
+            RESUME=true
+            echo "NOTE: ${PACKAGE} ${VERSION} is already on PyPI with no tag."
+            echo "      A previous run uploaded it and did not finish. Resuming:"
+            echo "      the upload is skipped, verify and tag complete the release."
+          elif [ "$CODE" = 200 ] && [ "$TAGGED" = yes ]; then
+            echo "FAIL: ${PACKAGE} ${VERSION} is on PyPI and tagged — already released."
+            exit 1
+          else
+            echo "FAIL: tag v${VERSION} exists but PyPI has no ${VERSION}."
+            echo "      Not a state this workflow creates; stopping rather than guessing."
+            exit 1
+          fi
+          echo "resume=${RESUME}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "package=${PACKAGE}" >> "$GITHUB_OUTPUT"
 
@@ -172,13 +197,21 @@ jobs:
           python-version: "3.12"
 
       - name: Install build dependencies
+        if: needs.security.outputs.resume != 'true'
         run: pip install build
 
       - name: Build package
+        if: needs.security.outputs.resume != 'true'
         run: python -m build
 
       - name: Publish to PyPI
+        if: needs.security.outputs.resume != 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Already on PyPI — resuming
+        if: needs.security.outputs.resume == 'true'
+        run: |
+          echo "skipped the upload: this version is already on PyPI"
 
   # ---------------------------------------------------------------------------
   # Done when PyPI serves the version (verify); then tag the released commit. A workflow's
