@@ -104,7 +104,7 @@ def cmd_enable(args: argparse.Namespace) -> int:
     if missing:
         print(
             f"note: no credentials for {persona}:{provider} ({a}). "
-            f"Run: qso-auth creds set {persona} {provider}  # need {need}"
+            f"Run: qso-graph-auth creds set {persona} {provider}  # need {need}"
         )
     return 0
 

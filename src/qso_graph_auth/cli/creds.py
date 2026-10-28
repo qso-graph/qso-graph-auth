@@ -153,7 +153,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     store = PersonaStore()
     personas = store.list()
     if not personas:
-        print("(no personas) — create one with: qso-auth persona add --name NAME …")
+        print("(no personas) — create one with: qso-graph-auth persona add --name NAME …")
         return 0
 
     target = (args.persona or "").lower() if hasattr(args, "persona") else ""
@@ -181,7 +181,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
                 )
                 print(
                     f"  {p.name}:{prov} — missing {need} "
-                    f"(run: qso-auth creds set {p.name} {prov})"
+                    f"(run: qso-graph-auth creds set {p.name} {prov})"
                 )
                 missing += 1
 

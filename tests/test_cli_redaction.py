@@ -37,3 +37,38 @@ def test_creds_get_prints_only_redacted(monkeypatch, capsys):
     printed = capsys.readouterr().out
     for secret in SECRETS.values():
         assert secret[:2] not in printed
+
+
+def test_qso_auth_still_works_and_says_where_it_went(capsys):
+    """The old command keeps working; people have it in scripts and notes.
+
+    qso-graph-auth#28. Asserts all three things that matter: it runs, it warns,
+    and the warning goes to stderr so anything parsing stdout is unaffected.
+    """
+    from qso_graph_auth.cli.root import main_renamed
+
+    rc = main_renamed([])
+    out = capsys.readouterr()
+    assert "qso-auth is now qso-graph-auth" in out.err
+    assert "qso-auth is now qso-graph-auth" not in out.out
+    assert rc == 0
+
+
+def test_both_commands_behave_identically(capsys):
+    """A deprecation changes the notice, not the behaviour or the exit status."""
+    from qso_graph_auth.cli.root import main, main_renamed
+
+    rc_new = main([])
+    new = capsys.readouterr()
+    rc_old = main_renamed([])
+    old = capsys.readouterr()
+
+    assert rc_new == rc_old
+    assert new.out == old.out, "the alias produced different output on stdout"
+
+
+def test_help_shows_the_new_name():
+    """prog= drives help and error text; it said qso-auth before #28."""
+    from qso_graph_auth.cli.root import build_parser
+
+    assert build_parser().prog == "qso-graph-auth"

@@ -66,7 +66,7 @@ class PersonaManager:
             raise SecretMissing(
                 persona, provider,
                 f"Missing credentials for {provider} on persona '{persona}' "
-                f"(run: qso-auth creds set {persona} {provider})"
+                f"(run: qso-graph-auth creds set {persona} {provider})"
             )
 
         username = creds.username
@@ -74,7 +74,7 @@ class PersonaManager:
             raise SecretMissing(
                 persona, provider,
                 f"No username for {provider} on persona '{persona}' "
-                f"(run: qso-auth creds set {persona} {provider})"
+                f"(run: qso-graph-auth creds set {persona} {provider})"
             )
 
         if prefer is None:
@@ -87,7 +87,7 @@ class PersonaManager:
             raise SecretMissing(
                 persona, provider,
                 f"No password/api_key for {provider} on persona '{persona}' "
-                f"(run: qso-auth creds set {persona} {provider})"
+                f"(run: qso-graph-auth creds set {persona} {provider})"
             )
         return username, secret
 
