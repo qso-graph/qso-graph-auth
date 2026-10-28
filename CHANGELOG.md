@@ -5,6 +5,23 @@ All notable changes to `qso-graph-auth` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **The command is now `qso-graph-auth`, matching the package.** Every other
+  package in the organisation runs by its own name — `wspr-mcp`, `pota-mcp`,
+  `qsp-client` — while this one installed as `qso-graph-auth` and ran as
+  `qso-auth`, so you had to open the README to find out what to type.
+  `uv tool install qso-graph-auth` now gives you `qso-graph-auth`.
+
+### Deprecated
+
+- **`qso-auth` still works** and will be removed in a later release. It runs the
+  same CLI after printing a note to stderr saying where it went — stderr, so
+  anything parsing the output is unaffected, and the exit status is unchanged.
+  People have it in scripts and notes, so it does not simply vanish.
+
 ## [0.4.0] — 2026-10-28
 
 - eMudhra CA advisory: patched interpreters, pip, and a stated certifi floor

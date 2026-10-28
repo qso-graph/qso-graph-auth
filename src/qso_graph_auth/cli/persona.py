@@ -36,7 +36,7 @@ def cmd_list(args: argparse.Namespace) -> int:
     store = PersonaStore()
     personas = store.list()
     if not personas:
-        print("(no personas) — create with: qso-auth persona add --name NAME …")
+        print("(no personas) — create with: qso-graph-auth persona add --name NAME …")
         return 0
 
     verbose = bool(getattr(args, "verbose", False))

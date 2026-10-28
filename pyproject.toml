@@ -25,7 +25,11 @@ dependencies = [
 ]
 
 [project.scripts]
-qso-auth = "qso_graph_auth.cli:main"
+# The command is the package name, like every other package in the org.
+# qso-auth stays as a deprecated alias so scripts and notes keep working;
+# it prints where it went and will be removed in a later release.
+qso-graph-auth = "qso_graph_auth.cli:main"
+qso-auth = "qso_graph_auth.cli:main_renamed"
 
 [project.urls]
 Homepage = "https://qso-graph.io"

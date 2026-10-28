@@ -1,4 +1,4 @@
-"""Root CLI wiring for qso-auth."""
+"""Root CLI wiring for qso-graph-auth."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ class _RegisterCLI(Protocol):
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="qso-auth",
+        prog="qso-graph-auth",
         description="Persona and credential management for qso-graph MCP servers",
     )
     parser.add_argument(
@@ -50,3 +50,22 @@ def main(argv: list[str] | None = None) -> int:
 
     parser.print_help()
     return 2
+
+
+def main_renamed(argv: list[str] | None = None) -> int:
+    """The old `qso-auth` command: still works, and says where it went.
+
+    People have it in scripts and notes, so it cannot simply vanish. The notice
+    goes to stderr rather than stdout so anything parsing the output is
+    unaffected, and the exit status is whatever the real command returned --
+    a deprecation must not change what a script sees.
+
+    Same shape as qsp-client's `qsp-mcp`, which is the fleet's reference for
+    renaming a command without breaking the people using it.
+    """
+    print(
+        "Note: qso-auth is now qso-graph-auth; the qso-auth command will be "
+        "removed in a later release.",
+        file=sys.stderr,
+    )
+    return main(argv)
