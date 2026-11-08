@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/qso-graph-auth)](https://pypi.org/project/qso-graph-auth/)
 [![Python](https://img.shields.io/pypi/pyversions/qso-graph-auth)](https://pypi.org/project/qso-graph-auth/)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 Persona and credential management for [qso-graph](https://qso-graph.io) MCP servers.
 
@@ -100,4 +100,4 @@ This package is part of the [qso-graph](https://github.com/qso-graph) MCP server
 
 ## License
 
-[GPLv3](LICENSE)
+[GPL-3.0-or-later](LICENSE)
