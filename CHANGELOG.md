@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-11-08
+
 ### Changed
 
 - README: `uv add` for your own code, in place of `pip install`.
