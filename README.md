@@ -14,7 +14,7 @@ Provides a shared identity layer so that authenticated MCP servers (eqsl-mcp, qr
 uv tool install qso-graph-auth   # the qso-graph-auth command, on your PATH
 ```
 
-MCP servers that need it install it themselves. For your own code: `pip install qso-graph-auth`.
+MCP servers that need it install it themselves. For your own code: `uv add qso-graph-auth`.
 
 ## Quick Start
 
